@@ -1,0 +1,56 @@
+inicio
+    varinicio
+        A lit;
+        B inteiro;
+        D inteiro;
+        C real;
+    varfim;
+    escreva "Digite B";
+    leia B;
+    escreva "Digite A:";
+    leia A;
+    se(B>2)
+    entao
+        se(B<=4)
+        entao
+            escreva "B esta entre 2 e 4";
+        fimse
+    fimse
+    B<-B+1;
+    B<-B+2;
+    B<-B+3;
+    D<-B;
+    C<-5.0;
+    facaAte (B>5)
+        escreva B;
+        B<-B+1;
+    fimFaca
+    escreva "\nB=\n";
+    escreva D;
+    escreva "\n";
+    escreva C;
+    escreva "\n";
+    escreva A;
+    555555
+    5.2323456
+    436346.1234
+    463e3456
+    2E345
+    8e+234
+    7e-457
+    345.123e2436
+    1.346e-436
+    6457.346E+234
+    34265..
+    123.346.
+    235-346
+    43775.456E+3456.1234
+    346346.3457E+3456.346e
+    123.e
+    54745Ee
+    faca-hoje
+    "@"
+    jorg-.e
+fim
+{
+"dfhsdfhs
