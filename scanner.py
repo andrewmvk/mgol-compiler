@@ -36,7 +36,7 @@ class SymbolsTable:
       token = Token(t_class=word, t_name=word, t_type=word)
       self.insert(token)
 
-reserverdWords = ["inicio", "varinicio", "varfim", "escreva", "leia", "se", "entao", "fimse", "facaAte", "fimFaca", "fim", "inteiro", "literal", "real"]
+reserverdWords = ["inicio", "varinicio", "varfim", "escreva", "leia", "se", "entao", "fimse", "facaAte", "fimFaca", "fim", "inteiro", "lit", "real"]
 
 symbolsTable = SymbolsTable()
 symbolsTable.pre_fetch(reserverdWords)
@@ -75,7 +75,7 @@ def scanner(f):
 	while True:
 		c = f.read(1)
 		if not c:
-			return Token("EOF", "$", "EOF", line, column)
+			return Token("$", "$", "$", line, column)
 
 		hexValue = ord(c)
 		column += 1
@@ -92,7 +92,7 @@ def scanner(f):
 				column += 1
 
 				if hexValue == 0x22: #closing the literal
-					return Token("LIT", tokenBuffer, "LITERAL", line, column)
+					return Token("lit", tokenBuffer, "LITERAL", line, column)
 
 				if not is_valid(hexValue):
 					error_handler(f"Caractere inválido na linguagem '{c}'")
@@ -120,7 +120,7 @@ def scanner(f):
 			if found_token:
 				return found_token
 			else:
-				new_token = Token("ID", tokenBuffer, "NULO", line, column)
+				new_token = Token("id", tokenBuffer, "NULO", line, column)
 				symbolsTable.insert(new_token)
 				return new_token
 
@@ -176,7 +176,7 @@ def scanner(f):
 					f.seek(prev_pos)
 					break
 
-			return Token("NUM", tokenBuffer, num_type, line, column)
+			return Token("num", tokenBuffer, num_type, line, column)
 
 		elif hexValue == 0x7B: #comment, must start with a {
 			tokenBuffer = ""
@@ -208,7 +208,7 @@ def scanner(f):
 			else:
 				current_state = "greater"
 
-			current_type = "OPR"
+			current_type = "opr"
 			prev_pos = f.tell()
 			c = f.read(1)
 			if not c:
@@ -219,7 +219,7 @@ def scanner(f):
 
 			if current_state == "less" and hexValue == 0x2D: # <-
 				tokenBuffer += c
-				current_type = "RCB"
+				current_type = "rcb"
 			elif current_state == "less" and hexValue == 0x3E: # <>
 				tokenBuffer += c
 			elif current_state in ["greater", "less"] and hexValue == 0x3D: # >= or <=
@@ -231,23 +231,23 @@ def scanner(f):
 
 		elif hexValue in [0x2B, 0x2D, 0x2F]: #arithmetic operators + or - or /
 			tokenBuffer = c
-			return Token("OPM", tokenBuffer, line, column)
+			return Token("opm", tokenBuffer, line, column)
 	
 		elif hexValue == 0x28: #( open parenthesis
 			tokenBuffer = c
-			return Token("AB_P", tokenBuffer, line, column)
+			return Token("ab_p", tokenBuffer, line, column)
 	
 		elif hexValue == 0x29: #) close parenthesis
 			tokenBuffer = c
-			return Token("FC_P", tokenBuffer, line, column)
+			return Token("fc_p", tokenBuffer, line, column)
 	
 		elif hexValue == 0x3B: #; semicolon
 			tokenBuffer = c
-			return Token("PT_V", tokenBuffer, line, column)
+			return Token("ptv", tokenBuffer, line, column)
 	
 		elif hexValue == 0x2C: #, comma
 			tokenBuffer = c
-			return Token("Vir", tokenBuffer, line, column)
+			return Token("vir", tokenBuffer, line, column)
 	
 		elif is_tsl(hexValue): #ignore tab, space and line breaks
 			if hexValue == 0x0A: #\n
