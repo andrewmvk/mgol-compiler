@@ -42,6 +42,30 @@ grammar = [
 	("A", ["fim"]),
 ]
 
+errors = [
+	("E1", "Erro de sintaxe: Esperado 'inicio'"),
+	("E2", "Erro de sintaxe: Esperado 'varinicio'"),
+	("E3", "Erro de sintaxe: Esperado 'escreva' 'entao' 'senao''fimse' 'fimfaca'"),
+	("E4", "Erro de sintaxe: Esperado 'varfim' 'id'"),
+	("E5", "Erro de sintaxe: Esperado '$'"),
+	("E7", "Erro de sintaxe: Esperado 'ptv'"),
+	("E9", "Erro de sintaxe: Esperado 'inteiro' 'real' 'lit'"),
+	("E10", "Erro de sintaxe: Esperado 'vir' 'inteiro' 'real' 'lit'"),
+	("E11", "Erro de sintaxe: Esperado 'id'"),
+	("E17", "Erro de sintaxe: Esperado 'id' 'leia' 'escreva' 'se' 'fimse'"),
+	("E18", "Erro de sintaxe: Esperado 'ab_p'"),
+	("E19", "Erro de sintaxe: Esperado 'rcb'"),
+	("E24", "Erro de sintaxe: Esperado 'id' 'leia' 'escreva' 'se' 'fimse' 'facaAte' 'fimFaca' 'fim'"),
+	("E29", "Erro de sintaxe: Esperado 'id' 'lit' 'num'"),
+	("E30", "Erro de sintaxe: Esperado 'id' 'num'"),
+	("E31", "Erro de sintaxe: Esperado 'ptv' 'opm' 'opr' 'fc_p'"),
+	("E33", "Erro de sintaxe: Esperado 'opr'"),
+	("E34", "Erro de sintaxe: Esperado 'fc_p'"),
+	("E35", "Erro de sintaxe: Esperado 'entao'"),
+	("E51", "Erro de sintaxe: Esperado 'ptv' 'opm'"),
+	("E55", "Erro de sintaxe: Esperado 'id' 'leia' 'escreva' 'se' 'fimFaca'")
+]
+
 ACTION, GOTO = table_transform()
 
 def parser():
