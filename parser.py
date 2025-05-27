@@ -70,68 +70,66 @@ ACTION, GOTO = table_transform()
 
 def parser():
 	with open("model.txt", "r") as f:
+		a = scanner(f)
+		b = a.t_class
+		stack = ["$", "0"]
+		
 		while True:
-			token = scanner(f)
-			a = token.t_class
-			stack = ["$", "0"]
-			
-			while True:
-				# print(f"Stack[-1]: '", stack[-1], "'", stack)
-				s = int(stack[-1]) # top of the stack
-				print(f"Stack: ", stack, a, s, ACTION[a][s])
-				if (ACTION[a][s].startswith("S")):
-					t = ACTION[a][s][1:]
-					stack.append(t)
-					token = scanner(f)
-					a = token.t_class
-				elif (ACTION[a][s].startswith("R")):
-					t = int(ACTION[a][s][1:])
-					left, right = grammar[t-1] # rule t is in the t-1 index
-					for _ in range(len(right)):
-						stack.pop()
-					#print(f"Stack after Pop of (", len(right), "), ",  stack)
-					t = int(stack[-1])
-					print(f"GOTO: ", left, t, GOTO[left][t])
-					stack.append(GOTO[left][t])
-					print(f"{left} → {' '.join(right)}")
-				elif (ACTION[a][s] == "Acc"):
-					print("Accepted")
-					return
+			s = int(stack[-1]) # top of the stack
+			action = ACTION[b][s]
+			print(f"Stack: ", stack, b, s, action)
+			if (action.startswith("S")):
+				t = action[1:]
+				stack.append(t)
+				a = scanner(f)
+				b = a.t_class
+			elif (action.startswith("R")):
+				t = int(action[1:])
+				left, right = grammar[t-1] # rule t is in the t-1 index
+				for _ in range(len(right)):
+					stack.pop()
+				#print(f"Stack after Pop of (", len(right), "), ",  stack)
+				t = int(stack[-1])
+				print(f"GOTO: ", left, t, GOTO[left][t])
+				stack.append(GOTO[left][t])
+				print(f"{left} → {' '.join(right)}")
+			elif (action == "Acc"):
+				print("Accepted")
+				return
+			else:
+				print(f"Error - ", errors[action], "Coluna: ", a.column, "Linha: ", a.line)
+				if action == "E7":
+					print("Correção do argumento que falta ';'")
+					b = "ptv"
+				elif action == "E18":
+					print("Correção do argumento que falta '('")
+					b = "ab_p"
+				elif action == "E34":
+					print("Correção do argumento que falta ')'")
+					b = "fc_p"
+				elif action == "E1":
+					print("Correção do argumento que falta 'inicio'")
+					b = "inicio"
+				elif action == "E2":
+					print("Correção do argumento que falta 'varinicio'")
+					b = "varinicio"
+				elif action == "E1":
+					print("Correção do argumento que falta 'id'")
+					b = "id"
+				elif action == "E19":
+					print("Correção do argumento que falta 'rcb'")
+					b = "rcb"
+				elif action == "E33":
+					print("Correção do argumento que falta 'opr'")
+					b = "opr"
+				elif action == "E35":
+					print("Correção do argumento que falta 'entao'")
+					b = "entao"
 				else:
-					print(f"Error: ", errors[ACTION[a][s]], "Coluna: ", token.column, "Linha: ", token.line)
-					if ACTION[a][s] == "E7":
-						print("Correção do argumento que falta ';'")
-						a = "ptv"
-						continue
-					elif ACTION[a][s] == "E18":
-						print("Correção do argumento que falta '('")
-						a = "ab_p"
-					elif ACTION[a][s] == "E34":
-						print("Correção do argumento que falta ')'")
-						a = "fc_p"
-					elif ACTION[a][s] == "E1":
-						print("Correção do argumento que falta 'inicio'")
-						a = "inicio"
-					elif ACTION[a][s] == "E2":
-						print("Correção do argumento que falta 'varinicio'")
-						a = "varinicio"
-					elif ACTION[a][s] == "E1":
-						print("Correção do argumento que falta 'id'")
-						a = "id"
-					elif ACTION[a][s] == "E19":
-						print("Correção do argumento que falta 'rcb'")
-						a = "rcb"
-					elif ACTION[a][s] == "E33":
-						print("Correção do argumento que falta 'opr'")
-						a = "opr"
-					elif ACTION[a][s] == "E35":
-						print("Correção do argumento que falta 'entao'")
-						a = "entao"
-					else:
-						token = scanner(f)
-						a = token.t_class
-					if a == "$":
-						print("End of file reached")
-						return
+					a = scanner(f)
+					b = a.t_class
+				if b == "$":
+					print("End of file reached")
+					return
 
 parser()

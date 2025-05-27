@@ -69,8 +69,8 @@ def is_valid(h):
 	#                                                            ^ includes number
 
 def scanner(f):
-	global column
 	global line
+	global column
   
 	while True:
 		c = f.read(1)
@@ -118,6 +118,8 @@ def scanner(f):
 
 			found_token = symbolsTable.search(tokenBuffer)
 			if found_token:
+				found_token.line = line
+				found_token.column = column
 				return found_token
 			else:
 				new_token = Token("id", tokenBuffer, "NULO", line, column)
@@ -190,7 +192,6 @@ def scanner(f):
 				column+=1
 
 				if hexValue == 0x7D: #closing comment }
-					#ignored
 					break
 
 				if not is_valid(hexValue):
@@ -257,8 +258,10 @@ def scanner(f):
 
 		elif is_valid(hexValue): #valid character, but not a valid token
 			error_handler(f"Caractere sem padrão definido '{c}'")
+			column += 1
 	
 		else:
 			error_handler(f"Caractere inválido na linguagem '{c}'")
+			column += 1
 
 symbolsTable.print_table()
