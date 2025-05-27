@@ -1,5 +1,6 @@
 from scanner import scanner
 from table_transform import table_transform
+from scanner import Token
 
 grammar = [
 	("P'", ["P"]),
@@ -82,7 +83,8 @@ def parser():
 				if (ACTION[a][s].startswith("S")):
 					t = ACTION[a][s][1:]
 					stack.append(t)
-					a = scanner(f).t_class
+					token = scanner(f)
+					a = token.t_class
 				elif (ACTION[a][s].startswith("R")):
 					t = int(ACTION[a][s][1:])
 					left, right = grammar[t-1] # rule t is in the t-1 index
@@ -97,8 +99,15 @@ def parser():
 					print("Accepted")
 					return
 				else:
-					print(f"Error: ", errors[ACTION[a][s]])
-					a = scanner(f).t_class
+					print(f"Error: ", errors[ACTION[a][s]], "Coluna: ", token.column, "Linha: ", token.line)
+					if ACTION[a][s] == "E7":
+						print("Correção do argumento que falta ';'")
+						print("Valor atual: ", a)
+						a = "ptv"
+						continue
+					else:
+						token = scanner(f)
+						a = token.t_class
 					if a == "$":
 						print("End of file reached")
 						return
