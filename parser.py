@@ -1,4 +1,4 @@
-from scanner import scanner
+from scanner import Scanner
 from table_transform import table_transform
 
 grammar = [
@@ -70,18 +70,19 @@ ACTION, GOTO = table_transform()
 
 def parser():
 	with open("model.txt", "r") as f:
-		a = scanner(f)
+		scanner = Scanner(f)
+		a = scanner.scan()
 		b = a.t_class
 		stack = ["$", "0"]
 		
 		while True:
 			s = int(stack[-1]) # top of the stack
 			action = ACTION[b][s]
-			print(f"Stack: ", stack, b, s, action)
+			#print(f"Stack: ", stack, b, s, action, "Linha: ", a.line, "Column: ", a.column)
 			if (action.startswith("S")):
 				t = action[1:]
 				stack.append(t)
-				a = scanner(f)
+				a = scanner.scan()
 				b = a.t_class
 			elif (action.startswith("R")):
 				t = int(action[1:])
@@ -90,14 +91,14 @@ def parser():
 					stack.pop()
 				#print(f"Stack after Pop of (", len(right), "), ",  stack)
 				t = int(stack[-1])
-				print(f"GOTO: ", left, t, GOTO[left][t])
+				#print(f"GOTO: ", left, t, GOTO[left][t])
 				stack.append(GOTO[left][t])
 				print(f"{left} → {' '.join(right)}")
 			elif (action == "Acc"):
 				print("Accepted")
 				return
 			else:
-				print(f"Error - ", errors[action], "Coluna: ", a.column, "Linha: ", a.line)
+				print(f"Error - ", errors[action],  "Linha: ", a.line, "Coluna: ", a.column)
 				if action == "E7":
 					print("Correção do argumento que falta ';'")
 					b = "ptv"
@@ -126,7 +127,7 @@ def parser():
 					print("Correção do argumento que falta 'entao'")
 					b = "entao"
 				else:
-					a = scanner(f)
+					a = scanner.scan()
 					b = a.t_class
 				if b == "$":
 					print("End of file reached")
