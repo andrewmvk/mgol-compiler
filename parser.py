@@ -114,7 +114,7 @@ def parser():
 				elif action == "E2":
 					print("Correção do argumento que falta 'varinicio'")
 					b = "varinicio"
-				elif action == "E1":
+				elif action == "E11":
 					print("Correção do argumento que falta 'id'")
 					b = "id"
 				elif action == "E19":
