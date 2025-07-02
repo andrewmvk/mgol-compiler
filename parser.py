@@ -1,45 +1,47 @@
 from scanner import Scanner
 from table_transform import table_transform
+from semantic import Semantic
+from scanner import Token
 
 grammar = [
-	("P'", ["P"]),
-	("P", ["inicio", "V", "A"]),
-	("V", ["varinicio", "LV"]),
-	("LV", ["D", "LV"]),
-	("LV", ["varfim", "ptv"]),
-	("D", ["L", "TIPO", "ptv"]),
-	("L", ["id", "vir", "L"]),
-	("L", ["id"]),
-	("TIPO", ["inteiro"]),
-	("TIPO", ["real"]),
-	("TIPO", ["lit"]),
-	("A", ["ES", "A"]),
-	("ES", ["leia", "id", "ptv"]),
-	("ES", ["escreva", "ARG", "ptv"]),
-	("ARG", ["lit"]),
-	("ARG", ["num"]),
-	("ARG", ["id"]),
-	("A", ["CMD", "A"]),
-	("CMD", ["id", "rcb", "LD", "ptv"]),
-	("LD", ["OPRD", "opm", "OPRD"]),
-	("LD", ["OPRD"]),
-	("OPRD", ["id"]),
-	("OPRD", ["num"]),
-	("A", ["COND", "A"]),
-	("COND", ["CAB", "CP"]),
-	("CAB", ["se", "ab_p", "EXP_R", "fc_p", "entao"]),
-	("EXP_R", ["OPRD", "opr", "OPRD"]),
-	("CP", ["ES", "CP"]),
-	("CP", ["CMD", "CP"]),
-	("CP", ["COND", "CP"]),
-	("CP", ["fimse"]),
-	("A", ["R", "A"]),
-	("R", ["facaAte", "ab_p", "EXP_R", "fc_p", "CP_R"]),
-	("CP_R", ["ES", "CP_R"]),
-	("CP_R", ["CMD", "CP_R"]),
-	("CP_R", ["COND", "CP_R"]),
-	("CP_R", ["fimFaca"]),
-	("A", ["fim"]),
+	(Token("P'"), ["P"], Semantic.default),
+	(Token("P"), ["inicio", "V", "A"], Semantic.default),
+	(Token("V"), ["varinicio", "LV"], Semantic.default),
+	(Token("LV"), ["D", "LV"], Semantic.default),
+	(Token("LV"), ["varfim", "ptv"], Semantic.rule5),
+	(Token("D"), ["L", "TIPO", "ptv"], Semantic.rule6),
+	(Token("L"), ["id", "vir", "L"], Semantic.rule7),
+	(Token("L"), ["id"], Semantic.rule8),
+	(Token("TIPO"), ["inteiro"], Semantic.rule9),
+	(Token("TIPO"), ["real"] , Semantic.rule9),
+	(Token("TIPO"), ["lit"], Semantic.rule9),
+	(Token("A"), ["ES", "A"], Semantic.default),
+	(Token("ES"), ["leia", "id", "ptv"], Semantic.rule13),
+	(Token("ES"), ["escreva", "ARG", "ptv"], Semantic.rule14),
+	(Token("ARG"), ["lit"], Semantic.rule15),
+	(Token("ARG"), ["num"], Semantic.rule15),
+	(Token("ARG"), ["id"], Semantic.rule15),
+	(Token("A"), ["CMD", "A"], Semantic.default),
+	(Token("CMD"), ["id", "rcb", "LD", "ptv"], Semantic.rule19),
+	(Token("LD"), ["OPRD", "opm", "OPRD"], Semantic.rule20),
+	(Token("LD"), ["OPRD"] , Semantic.rule15),
+	(Token("OPRD"), ["id"] , Semantic.rule17),
+	(Token("OPRD"), ["num"], Semantic.rule15),
+	(Token("A"), ["COND", "A"], Semantic.default),
+	(Token("COND"), ["CAB", "CP"], Semantic.rule25),
+	(Token("CAB"), ["se", "ab_p", "EXP_R", "fc_p", "entao"], Semantic.rule26),
+	(Token("EXP_R"), ["OPRD", "opr", "OPRD"], Semantic.rule20),
+	(Token("CP"), ["ES", "CP"], Semantic.default),
+	(Token("CP"), ["CMD", "CP"], Semantic.default),
+	(Token("CP"), ["COND", "CP"], Semantic.default),
+	(Token("CP"), ["fimse"], Semantic.default),
+	(Token("A"), ["R", "A"], Semantic.default),
+	(Token("R"), ["facaAte", "ab_p", "EXP_R", "fc_p", "CP_R"], Semantic.rule33),
+	(Token("CP_R"), ["ES", "CP_R"], Semantic.default),
+	(Token("CP_R"), ["CMD", "CP_R"], Semantic.default),
+	(Token("CP_R"), ["COND", "CP_R"], Semantic.default),
+	(Token("CP_R"), ["fimFaca"], Semantic.rule37),
+	(Token("A"), ["fim"], Semantic.default),
 ]
 
 errors = {
@@ -66,6 +68,8 @@ errors = {
 	"E55": "Erro de sintaxe: Esperado 'id' 'leia' 'escreva' 'se' 'fimFaca'"
 }
 
+
+
 ACTION, GOTO = table_transform()
 
 def parser():
@@ -73,29 +77,33 @@ def parser():
 		scanner = Scanner(f)
 		a = scanner.scan()
 		b = a.t_class
-		stack = ["$", "0"]
-		
+		stack_sint = ["$", "0"]
+		stack_semant = []
+
 		while True:
-			s = int(stack[-1]) # top of the stack
+			s = int(stack_sint[-1]) # top of the stack_sint
 			action = ACTION[b][s]
-			#print(f"Stack: ", stack, b, s, action, "Linha: ", a.line, "Column: ", a.column)
 			if (action.startswith("S")):
 				t = action[1:]
-				stack.append(t)
+				stack_sint.append(t)
+				stack_semant.append(a)  #empilha na pilha semantica
 				a = scanner.scan()
 				b = a.t_class
 			elif (action.startswith("R")):
 				t = int(action[1:])
-				left, right = grammar[t-1] # rule t is in the t-1 index
+				left, right, rule = grammar[t-1] # rule t is in the t-1 index
 				for _ in range(len(right)):
-					stack.pop()
-				#print(f"Stack after Pop of (", len(right), "), ",  stack)
-				t = int(stack[-1])
-				#print(f"GOTO: ", left, t, GOTO[left][t])
-				stack.append(GOTO[left][t])
-				print(f"{left} → {' '.join(right)}")
+					stack_sint.pop()
+				t = int(stack_sint[-1])
+				stack_sint.append(GOTO[left.t_class][t])
+				print(f"{left.t_class} → {' '.join(right)}")
+				rule(token=left, stack_semant=stack_semant)
+				for _ in range(len(right)):
+					stack_semant.pop()
+				stack_semant.append(left)  # empilha na pilha semantica
 			elif (action == "Acc"):
 				print("Accepted")
+				Semantic.print_file()
 				return
 			else:
 				print(f"Error - ", errors[action],  "Linha: ", a.line, "Coluna: ", a.column)
