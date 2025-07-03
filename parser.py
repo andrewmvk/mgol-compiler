@@ -8,7 +8,7 @@ grammar = [
 	(Token("P"), ["inicio", "V", "A"], Semantic.default),
 	(Token("V"), ["varinicio", "LV"], Semantic.default),
 	(Token("LV"), ["D", "LV"], Semantic.default),
-	(Token("LV"), ["varfim", "ptv"], Semantic.rule5),
+	(Token("LV"), ["varfim", "ptv"], Semantic.default),
 	(Token("D"), ["L", "TIPO", "ptv"], Semantic.rule6),
 	(Token("L"), ["id", "vir", "L"], Semantic.rule7),
 	(Token("L"), ["id"], Semantic.rule8),
@@ -30,7 +30,7 @@ grammar = [
 	(Token("A"), ["COND", "A"], Semantic.default),
 	(Token("COND"), ["CAB", "CP"], Semantic.rule25),
 	(Token("CAB"), ["se", "ab_p", "EXP_R", "fc_p", "entao"], Semantic.rule26),
-	(Token("EXP_R"), ["OPRD", "opr", "OPRD"], Semantic.rule20),
+	(Token("EXP_R"), ["OPRD", "opr", "OPRD"], Semantic.rule27),
 	(Token("CP"), ["ES", "CP"], Semantic.default),
 	(Token("CP"), ["CMD", "CP"], Semantic.default),
 	(Token("CP"), ["COND", "CP"], Semantic.default),
@@ -40,7 +40,7 @@ grammar = [
 	(Token("CP_R"), ["ES", "CP_R"], Semantic.default),
 	(Token("CP_R"), ["CMD", "CP_R"], Semantic.default),
 	(Token("CP_R"), ["COND", "CP_R"], Semantic.default),
-	(Token("CP_R"), ["fimFaca"], Semantic.rule37),
+	(Token("CP_R"), ["fimFaca"], Semantic.default),
 	(Token("A"), ["fim"], Semantic.default),
 ]
 
@@ -68,8 +68,6 @@ errors = {
 	"E55": "Erro de sintaxe: Esperado 'id' 'leia' 'escreva' 'se' 'fimFaca'"
 }
 
-
-
 ACTION, GOTO = table_transform()
 
 def parser():
@@ -82,11 +80,13 @@ def parser():
 
 		while True:
 			s = int(stack_sint[-1]) # top of the stack_sint
-			action = ACTION[b][s]
+			d = b if b != "literal" else "lit"
+			action = ACTION[d][s]
 			if (action.startswith("S")):
 				t = action[1:]
 				stack_sint.append(t)
-				stack_semant.append(a)  #empilha na pilha semantica
+				stack_semant.append(a)  # empilha na pilha semantica
+				if a.t_class == 'facaAte': Semantic.rule37()
 				a = scanner.scan()
 				b = a.t_class
 			elif (action.startswith("R")):
@@ -103,10 +103,11 @@ def parser():
 				stack_semant.append(left)  # empilha na pilha semantica
 			elif (action == "Acc"):
 				print("Accepted")
-				Semantic.print_file()
+				Semantic.write_file()
 				return
 			else:
 				print(f"Error - ", errors[action],  "Linha: ", a.line, "Coluna: ", a.column)
+				Semantic.error = True
 				if action == "E7":
 					print("Correção do argumento que falta ';'")
 					b = "ptv"

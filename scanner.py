@@ -36,11 +36,11 @@ class SymbolsTable:
       token = Token(t_class=word, t_name=word, t_type=word)
       self.insert(token)
 
-reserverdWords = ["inicio", "varinicio", "varfim", "escreva", "leia", "se", "entao", "fimse", "facaAte", "fimFaca", "fim", "inteiro", "lit", "real"]
+reserverdWords = ["inicio", "varinicio", "varfim", "escreva", "leia", "se", "entao", "fimse", "facaAte", "fimFaca", "fim", "inteiro", "lit", "real", "literal"]
 
 symbolsTable = SymbolsTable()
 symbolsTable.pre_fetch(reserverdWords)
-symbolsTable.print_table()
+# symbolsTable.print_table()
 
 def error_handler(message, line=-1, column=-1, eof=False):
   if eof:
@@ -89,7 +89,7 @@ class Scanner:
 					self.column += 1
 
 					if hexValue == 0x22: #closing the literal
-						return Token("lit", self.tokenBuffer, "LITERAL", self.line, self.column)
+						return Token("lit", self.tokenBuffer, "lit", self.line, self.column)
 
 					if not is_valid(hexValue):
 						error_handler(f"Caractere inválido na linguagem '{c}'")
@@ -126,7 +126,7 @@ class Scanner:
 			elif is_digit(hexValue): #number, must start with a digit
 				self.tokenBuffer = c
 				current_state = "integer"
-				num_type = "INTEIRO"
+				num_type = "inteiro"
 				prev_pos = self.f.tell()
 				while True:
 					prev_pos = self.f.tell()
@@ -144,7 +144,7 @@ class Scanner:
 						else:
 							self.column += 1
 							current_state = "float"
-							num_type = "REAL"
+							num_type = "real"
 							self.tokenBuffer += c + next_c #D* += .D
 
 					elif current_state in ["float", "integer"] and hexValue in [0x45, 0x65]: #exponential number E or e
@@ -167,7 +167,7 @@ class Scanner:
 
 							self.tokenBuffer += c + exponentialBuffer #D* += E(+|-)D
 							current_state = "exponential"
-							num_type = "REAL"
+							num_type = "real"
 
 					elif is_digit(hexValue):
 						self.tokenBuffer += c
@@ -259,4 +259,4 @@ class Scanner:
 			else:
 				error_handler(f"Caractere inválido na linguagem '{c}'", self.line, self.column)
 
-symbolsTable.print_table()
+# symbolsTable.print_table()
