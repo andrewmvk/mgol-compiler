@@ -40,13 +40,14 @@ reserverdWords = ["inicio", "varinicio", "varfim", "escreva", "leia", "se", "ent
 
 symbolsTable = SymbolsTable()
 symbolsTable.pre_fetch(reserverdWords)
-# symbolsTable.print_table()
 
 def error_handler(message, line=-1, column=-1, eof=False):
-  if eof:
-    print("ERROR:", message, f"- END OF FILE AT LINE: {line} and COLUMN: {column}")
-  else:
-    print("ERROR:", message, f"- AT LINE: {line} and COLUMN: {column}")
+	from semantic import Semantic
+	Semantic.error = True
+	if eof:
+		print("ERROR:", message, f"- END OF FILE AT LINE: {line} and COLUMN: {column}")
+	else:
+		print("ERROR:", message, f"- AT LINE: {line} and COLUMN: {column}")
 
 def is_letter(h):
   return (h >= 0x41 and h <= 0x5A) or (h >= 0x61 and h <= 0x7A)
@@ -258,5 +259,3 @@ class Scanner:
 		
 			else:
 				error_handler(f"Caractere inválido na linguagem '{c}'", self.line, self.column)
-
-# symbolsTable.print_table()
