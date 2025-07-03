@@ -93,6 +93,7 @@ class Semantic:
 	@staticmethod
 	def rule17(token: Token, stack_semant: list[Token]):
 		#ARG → id
+		#OPRD → id
 		id_token = stack_semant[-1]
 		if id_token and id_token.t_type != "NULL":
 			token.t_type = id_token.t_type
@@ -123,8 +124,8 @@ class Semantic:
 		global t_number
 		oprd1, oprd2, opm = stack_semant[-3], stack_semant[-1], stack_semant[-2]
 		token_type = oprd1.t_type
-		if oprd1.t_type != oprd2.t_type and (oprd1.t_type == 'lit' or oprd2.t_type == 'lit'):
-			if {oprd1.t_type, oprd2.t_type} == {'inteiro', 'real'} and (oprd1.t_type != 'lit' or oprd2.t_type != 'lit'):
+		if oprd1.t_type != oprd2.t_type and (oprd1.t_type in ['lit', 'literal'] or oprd2.t_type in ['lit', 'literal']):
+			if {oprd1.t_type, oprd2.t_type} == {'inteiro', 'real'} and (oprd1.t_type not in ['lit', 'literal'] or oprd2.t_type not in ['lit', 'literal']):
 				token_type = 'real'
 			else:
 				print(f"Erro: Operandos com tipos incompatíveis - Linha: {stack_semant[-1].line}, Coluna: {stack_semant[-1].column}") 
@@ -154,7 +155,7 @@ class Semantic:
 		# EXP_R→ OPRD opr OPRD
 		global t_number
 		oprd1, oprd2, opr = stack_semant[-3], stack_semant[-1], stack_semant[-2]
-		if (oprd1.t_type in ['inteiro', 'real'] and oprd2.t_type in ['inteiro', 'real']) or {oprd1.t_type, oprd2.t_type} == {'lit', 'lit'}:
+		if (oprd1.t_type in ['inteiro', 'real'] and oprd2.t_type in ['inteiro', 'real']) or {oprd1.t_type, oprd2.t_type} == {'lit', 'lit'} or {oprd1.t_type, oprd2.t_type} == {'literal', 'literal'}:
 			token.t_name = f"T{t_number}"
 			t_number += 1
 			tx.append(f"int {token.t_name};")
